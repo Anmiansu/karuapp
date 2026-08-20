@@ -1,0 +1,21 @@
+info:
+  name: Agregar Plato
+  type: http
+
+http:
+  method: POST
+  url: http://localhost:3000/api/platos
+  body:
+    type: json
+    data: |-
+      {
+        "nombre": "Lomito de Carne",
+        "precio": 33000
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
