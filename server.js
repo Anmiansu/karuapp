@@ -28,6 +28,36 @@ app.post("/api/platos", async (req, res) => {
     res.status(201).json(rows[0]) //retornamos la primera fila de la insercion 
 })
 
+app.put("/api/platos/:id", async (req, res) => {
+    const { id } = req.params;
+    const {nombre, precio} = req.body;
+
+    //verificamos si existen los datos
+    if (!nombre || !precio) {
+        return res.status(400).json({error: "Bad Request - Datos Incorrectos"})
+    }
+
+    //realizamos la consulta, si devuelve un array 
+    const { rows } = await pool.query("UPDATE platos SET nombre = $1, precio = $2 WHERE id = $3 RETURNING *", [nombre, precio, id])
+    if (rows.length === 0) {
+        return res.status(404).json({error: "Plato no encontrado"})
+    }
+
+    res.json(rows[0])
+
+})
+
+app.delete("/api/platos/:id", async (req, res) => {
+    const { id } = req.params;
+
+    const { rows } = await pool.query("DELETE FROM platos WHERE id = $1 RETURNING *", [id])
+    if (rows.length === 0) {
+        return res.status(404).json({error: "Plato no encontrado"})
+    }
+
+    res.sendStatus(204)
+})
+
 // definimos la función para escuchar las solicitudes
 app.listen(PORT, () => {
   console.log(`Puedes acceder al servidor en http://localhost:${PORT}`);
