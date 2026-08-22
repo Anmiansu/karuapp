@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaruApp</title>
+</head>
+<body>
+    <h1>🍲 KaruApp</h1>
+    <ul id="lista-platos"></ul>
+    <p id="total"></p>
+    <button id="recargar">Recargar menú</button>
+
+    <script>
+        //seleccionar los id de ul y p. Ahi cargaremos los datos
+        const lista = document.querySelector("#lista-platos")
+        const total = document.querySelector("#total")
+
+        //crear funcion para: realizar peticion al backend y generar los datos dinamicamente
+        const cargarPlatos = async () => {
+            const respuesta = await fetch("http://localhost:3000/api/platos")
+            const platos = await respuesta.json()
+
+            //testear datos
+            console.log(platos)
+            //limpiar la lista para que no haya duplicados
+            lista.innerHTML = ""
+
+            //recorrer cada plato, cargar el plato en un li y empujarlo al padre (ul)
+            for (plato of platos) {
+                const li = document.createElement("li")
+                li.textContent =`${plato.nombre} - ${plato.precio.toLocaleString("es-PY")} Gs.`
+                lista.appendChild(li)
+            }
+
+            //realizar la suma para el total
+            //reduce es una propiedad de tipo transformer, permite transformar un array a otra cosa, en este caso transformamos el array en un total
+            const suma = platos.reduce((acc, plato) => acc + plato.precio, 0)
+            total.textContent= `${suma.toLocaleString("es-PY")} Gs.`
+        }
+
+        //llamamos a la funcion para que se ejecute al cargar la página
+        cargarPlatos()
+
+        //seleccionamos el botton para hacerle que escuche al evento click y ejecute la funcion cargarPlatos
+        document.querySelector("#recargar").addEventListener("click", cargarPlatos)
+    </script>
+</body>
+</html>
